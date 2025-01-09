@@ -20,7 +20,7 @@ resource "tls_private_key" "example" {
 
 # Create the key pair in AWS using the generated public key
 resource "aws_key_pair" "my_key_pair" {
-  key_name   = "my-key-pair"
+  key_name   = "var.key_name"
   public_key = tls_private_key.example.public_key_openssh  # Use the generated public key
 
   tags = {
@@ -31,5 +31,5 @@ resource "aws_key_pair" "my_key_pair" {
 # Optionally, store the private key on your local machine
 resource "local_file" "private_key" {
   content  = tls_private_key.example.private_key_pem
-  filename = "${path.module}/my-key-pair.pem"  # Save private key to a file
+  filename = "${path.module}/var.key_name.pem"  # Save private key to a file
 }
