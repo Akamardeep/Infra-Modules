@@ -24,3 +24,18 @@ variable "subnet_id" {
   description = "Subnet ID"
   type        = string
 }
+
+
+
+variable "associate_public_ip_address" {
+  description = "Whether to associate a public IP address with the instance"
+  type        = bool
+  default     = true
+}
+
+variable "tags" {
+  description = "Tags to apply to the instance"
+  type        = map(string)
+  default     = {}
+}
+
