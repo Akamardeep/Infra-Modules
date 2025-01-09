@@ -20,7 +20,7 @@ resource "tls_private_key" "example" {
 
 # Create the key pair in AWS using the generated public key
 resource "aws_key_pair" "my_key_pair" {
-  key_name   = "var.key_name"
+  key_name   = var.key_name
   public_key = tls_private_key.example.public_key_openssh  # Use the generated public key
 
   tags = {
