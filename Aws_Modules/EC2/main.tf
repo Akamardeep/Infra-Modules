@@ -62,7 +62,7 @@ resource "aws_instance" "ec2_instance" {
   instance_type          = var.instance_type
   key_name               = aws_key_pair.my_key_pair.key_name
   subnet_id              = var.subnet_id
-  security_group_ids     = [aws_security_group.ec2_sg.id]
+  vpc_security_group_ids = [aws_security_group.ec2_sg.id] 
   associate_public_ip_address = var.associate_public_ip
 
   tags = {
