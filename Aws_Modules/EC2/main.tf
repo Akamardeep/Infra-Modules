@@ -2,6 +2,28 @@ provider "aws" {
   region = var.region
 }
 
+# Generate a new key pair using TLS
+resource "tls_private_key" "example" {
+  algorithm = "RSA"
+  rsa_bits  = 2048
+}
+
+# Create AWS Key Pair using the generated public key
+resource "aws_key_pair" "my_key_pair" {
+  key_name   = var.key_name
+  public_key = tls_private_key.example.public_key_openssh
+
+  tags = {
+    Name = "MyKeyPair"
+  }
+}
+
+# Save the private key locally
+resource "local_file" "private_key" {
+  content  = tls_private_key.example.private_key_pem
+  filename = "${path.module}/${var.key_name}.pem"  # Save private key as <key_name>.pem
+}
+
 # Security Group
 resource "aws_security_group" "ec2_sg" {
   name        = "${var.project}-ec2-sg"
@@ -34,17 +56,11 @@ resource "aws_security_group" "ec2_sg" {
   }
 }
 
-# Key Pair
-resource "aws_key_pair" "ec2_key" {
-  key_name   = var.key_name
-  public_key = var.public_key
-}
-
 # EC2 Instance
 resource "aws_instance" "ec2_instance" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
-  key_name               = aws_key_pair.ec2_key.key_name
+  key_name               = aws_key_pair.my_key_pair.key_name
   subnet_id              = var.subnet_id
   security_group_ids     = [aws_security_group.ec2_sg.id]
   associate_public_ip_address = var.associate_public_ip
@@ -53,7 +69,6 @@ resource "aws_instance" "ec2_instance" {
     Name = "${var.project}-ec2-instance"
   }
 
-  # Optional EBS volume attachment
   root_block_device {
     volume_size = var.root_volume_size
   }
