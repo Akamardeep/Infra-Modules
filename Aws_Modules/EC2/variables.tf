@@ -65,3 +65,15 @@ variable "ebs_volume_size" {
   type        = number
   default     = 20
 }
+
+variable "iam_policy_actions" {
+  description = "Actions allowed by IAM policy"
+  type        = list(string)
+  default     = ["s3:*", "logs:*"]
+}
+
+variable "iam_policy_resources" {
+  description = "Resources allowed by IAM policy"
+  type        = list(string)
+  default     = ["*"]
+}
