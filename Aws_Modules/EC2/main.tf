@@ -55,7 +55,56 @@ resource "aws_security_group" "ec2_sg" {
     Name = "${var.project}-ec2-sg"
   }
 }
+# IAM Role
+resource "aws_iam_role" "ec2_role" {
+  name               = "${var.project}-ec2-role"
+  assume_role_policy = data.aws_iam_policy_document.ec2_assume_role_policy.json
 
+  tags = {
+    Name = "${var.project}-ec2-role"
+  }
+}
+
+# IAM Policy for EC2 Role
+resource "aws_iam_policy" "ec2_policy" {
+  name        = "${var.project}-ec2-policy"
+  description = "Policy to allow EC2 instance to access specific resources"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action   = var.iam_policy_actions,  # Allow customizable actions
+        Effect   = "Allow",
+        Resource = var.iam_policy_resources
+      }
+    ]
+  })
+}
+
+# Attach Policy to Role
+resource "aws_iam_role_policy_attachment" "ec2_role_policy_attachment" {
+  role       = aws_iam_role.ec2_role.name
+  policy_arn = aws_iam_policy.ec2_policy.arn
+}
+
+# Instance Profile for the IAM Role
+resource "aws_iam_instance_profile" "ec2_instance_profile" {
+  name = "${var.project}-ec2-instance-profile"
+  role = aws_iam_role.ec2_role.name
+}
+
+# IAM Assume Role Policy Document
+data "aws_iam_policy_document" "ec2_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}
 # EC2 Instance
 resource "aws_instance" "ec2_instance" {
   ami                    = var.ami_id
@@ -64,6 +113,7 @@ resource "aws_instance" "ec2_instance" {
   subnet_id              = var.subnet_id
   vpc_security_group_ids = [aws_security_group.ec2_sg.id] 
   associate_public_ip_address = var.associate_public_ip
+  iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
 
   tags = {
     Name = "${var.project}-ec2-instance"
