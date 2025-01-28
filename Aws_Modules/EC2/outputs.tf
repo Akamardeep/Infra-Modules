@@ -11,4 +11,11 @@ output "public_ip" {
 output "security_group_id" {
   description = "ID of the Security Group"
   value       = aws_security_group.ec2_sg.id
+
+}
+
+
+output "iam_role_arn" {
+  description = "ARN of the IAM Role assigned to the EC2 instance"
+  value       = aws_iam_role.ec2_role.arn
 }
