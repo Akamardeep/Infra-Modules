@@ -33,11 +33,7 @@ variable "instance_type" {
 variable "key_name" {
   description = "Key pair name for the EC2 instance"
   type        = string
-}
-
-variable "public_key" {
-  description = "Public key for SSH access"
-  type        = string
+  default     = "my-key-pair"
 }
 
 variable "ssh_cidr_blocks" {
