@@ -25,6 +25,11 @@ pipeline {
 
                         # Clone fresh repository into the target directory
                         git clone https://github.com/Akamardeep/Infra-Modules.git /home/ec2-user/Infra-Modules
+                        ls
+                        pwd
+                        cd Infra-Modules
+                        pwd 
+                        ls
 
                         echo "Deployment successful"
                         
